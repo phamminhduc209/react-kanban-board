@@ -13,8 +13,11 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 // components
 import SimpleCard from "./SimpleCard";
+import { useAppContext } from '../contexts/AppContext';
 
 function KanbanList({ listItem, index, cards }) {
+  const { toggleModal } = useAppContext();
+
   return (
     <Draggable draggableId={listItem.id.toString()} index={index}>
       {(provided) => (
@@ -35,7 +38,7 @@ function KanbanList({ listItem, index, cards }) {
                       <Button
                         shape="circle"
                         icon={<PlusOutlined />}
-                        onClick={() => setOpen(true)}
+                        onClick={toggleModal}
                       />
                     </Tooltip>
 

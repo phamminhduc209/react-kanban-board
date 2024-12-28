@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import React from "react";
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 // ant core
 import {
@@ -14,90 +14,13 @@ import {
 // ant icons
 import { PlusOutlined } from "@ant-design/icons";
 import KanbanList from './components/KanbanList';
-import { dataKanban } from './dataKanban';
-
+import { useAppContext } from "./contexts/AppContext";
 const { TextArea } = Input;
 const { Option } = Select;
 
-const options = [];
-for (let i = 10; i < 36; i++) {
-  options.push({
-    label: i.toString(36) + i,
-    value: i.toString(36) + i,
-  });
-}
-
 function App() {
-  const [form] = Form.useForm();
-  const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [kanban, setKanban] = React.useState(dataKanban);
-
-  const handleSubmit = (values) => {
-    console.log("values: ", values);
-
-    setConfirmLoading(true);
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-
-  const onDragEnd = (result) => {
-    const { source, destination, draggableId, type } = result;
-    console.log('onDragEnd', result)
-
-    if(!destination) return;
-    const { droppableId: sourceDroppabledId, index: sourceIndex } = source;
-    const { droppableId: destinationDroppabledId, index: destinationIndex } = destination;
-
-    // TODO: drag drop list
-    if(type === 'LIST') {
-      setKanban((prevState) => {
-        const newColumns = [...prevState.columns];
-        newColumns.splice(sourceIndex, 1); // delete item
-        newColumns.splice(destinationIndex, 0, draggableId);
-        
-        return {
-          ...prevState,
-          columns: newColumns
-        }
-      })
-      return
-    }
-
-    // TODO: drag drop card same list
-    if(sourceDroppabledId === destinationDroppabledId) {
-      setKanban((prevState) => {
-        const listItem = prevState.lists[sourceDroppabledId];
-        const newCards = [...listItem.cards];
-        newCards.splice(sourceIndex, 1); // delete item
-        newCards.splice(destinationIndex, 0, draggableId);
-        
-        return {
-          ...prevState,
-          lists: {
-            ...prevState.lists,
-            [sourceDroppabledId]: {
-              ...prevState.lists[sourceDroppabledId],
-              cards: newCards
-            }
-          }
-        }
-      });
-      return;
-    }
-
-    // TODO: drag drop card different list
-
-  }
-
-  console.log('kanban: ', kanban)
-
+  const { open, kanban, form, toggleModal, onDragEnd } = useAppContext();
+  
   return (
     <>
       <header>
@@ -156,15 +79,15 @@ function App() {
         title="Add Card"
         open={open}
         onOk={form.submit}
-        onCancel={handleCancel}
-        confirmLoading={confirmLoading}
+        onCancel={toggleModal}
+        // confirmLoading={() => console.log('add todo')}
       >
         <br />
         <Form
           name="basic"
           form={form}
           initialValues={{ status: "new" }}
-          onFinish={handleSubmit}
+          onFinish={() => {}}
           autoComplete="off"
           labelCol={{ flex: "110px" }}
           labelAlign="left"
@@ -201,7 +124,6 @@ function App() {
               style={{ width: "100%" }}
               placeholder="Please select"
               optionLabelProp="label"
-              onChange={handleChange}
             >
               <Option value="tony123" label="tony 123">
                 <div className="selectField">
@@ -221,7 +143,7 @@ function App() {
           <Form.Item label="Status" name="status">
             <Select
               style={{ width: 120 }}
-              onChange={handleChange}
+              onChange={() => {}}
               options={[
                 {
                   value: "new",

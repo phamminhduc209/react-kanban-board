@@ -163,5 +163,6 @@ main {
   margin-top: 1rem;
 }
 
-.px-2 {
+.trelloList_content {
+  min-height: 10px;
 }
